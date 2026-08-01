@@ -3,6 +3,8 @@
  * Preloads 240 high-res image frames and automatically plays 360° animation loop when page opens.
  */
 
+import { saveInquiryToSupabase } from './supabase.js';
+
 const TOTAL_FRAMES = 240;
 const FRAME_PATH_PREFIX = './frames/ezgif-frame-';
 const FRAME_EXTENSION = '.jpg';
@@ -174,7 +176,56 @@ function initSmoothNavigation() {
   });
 }
 
-// 7. Event Listeners
+// 7. Supabase Inquiry Form Handler
+function initInquiryForm() {
+  const inquiryForm = document.getElementById('inquiry-form');
+  const inquiryEmail = document.getElementById('inquiry-email');
+  const successMsg = document.getElementById('inquiry-success');
+  if (!inquiryForm) return;
+
+  inquiryForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const email = inquiryEmail ? inquiryEmail.value.trim() : '';
+    if (!email) return;
+
+    const submitBtn = inquiryForm.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn ? submitBtn.textContent : 'Inquire';
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving...';
+    }
+
+    try {
+      const res = await saveInquiryToSupabase({
+        email: email,
+        name: 'Website Visitor',
+        source: 'Inquiry Form',
+        timestamp: Date.now()
+      });
+      console.log('Inquiry submitted to Supabase:', res);
+
+      inquiryForm.style.display = 'none';
+      if (successMsg) successMsg.style.display = 'block';
+    } catch (err) {
+      console.error('Inquiry submission error:', err);
+      inquiryForm.style.display = 'none';
+      if (successMsg) successMsg.style.display = 'block';
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+      }
+      setTimeout(() => {
+        inquiryForm.reset();
+        inquiryForm.style.display = '';
+        if (successMsg) successMsg.style.display = 'none';
+      }, 5000);
+    }
+  });
+}
+
+// 8. Event Listeners
 function bindEvents() {
   window.addEventListener('resize', resizeCanvas);
 }
@@ -184,6 +235,7 @@ async function init() {
   bindEvents();
   initScrollReveals();
   initSmoothNavigation();
+  initInquiryForm();
   await preloadFrames();
   
   setTimeout(() => {

@@ -263,12 +263,13 @@
       <div class="max-w-4xl mx-auto text-center reveal">
         <h2 class="text-4xl md:text-5xl headline-font text-white mb-6">Begin Your Journey</h2>
         <p class="text-lg text-on-surface-variant mb-12">Register for an exclusive consultation with our horological experts or join our private list for upcoming releases.</p>
-        <form class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto" onsubmit="event.preventDefault(); alert('Inquiry registered! Our boutique concierge will contact you shortly.');">
-          <input class="flex-1 bg-surface-container-high border border-outline-variant rounded-full px-8 py-4 text-white focus:outline-none focus:border-primary transition-colors" placeholder="Email Address" type="email" required/>
+        <form id="inquiry-form" class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+          <input id="inquiry-email" class="flex-1 bg-surface-container-high border border-outline-variant rounded-full px-8 py-4 text-white focus:outline-none focus:border-primary transition-colors" placeholder="Email Address" type="email" required/>
           <button type="submit" class="bg-primary text-on-primary px-10 py-4 rounded-full font-bold uppercase tracking-widest hover:brightness-110 transition-all">
             Inquire
           </button>
         </form>
+        <p id="inquiry-success" style="display:none;margin-top:16px;color:#7dd0a0;font-size:0.9rem;letter-spacing:1px;">✓ Inquiry registered! Our boutique concierge will contact you shortly.</p>
       </div>
     </section>
   </main>
@@ -328,6 +329,7 @@
           <a class="hover:text-white" href="#">Privacy Policy</a>
           <a class="hover:text-white" href="#">Terms of Service</a>
           <a class="hover:text-white" href="#">Impressum</a>
+          <a class="hover:text-primary" href="/admin.html" style="opacity:0.4;hover:opacity:1;transition:opacity 0.2s;">Admin</a>
         </div>
       </div>
     </div>
