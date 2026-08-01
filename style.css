@@ -1,0 +1,179 @@
+/* ==========================================================================
+   HORLOGE LUXURY WATCH HERO AUTOMATIC 360° ANIMATION & STYLES
+   ========================================================================== */
+
+:root {
+  --bg-dark: #131313;
+  --gold-primary: #e9c176;
+  --gold-light: #ffdea5;
+  --gold-dark: #c5a059;
+  --gold-glow: rgba(233, 193, 118, 0.2);
+  --text-main: #e5e2e1;
+  --text-muted: #d1c5b4;
+  --font-headline: 'Bodoni Moda', serif;
+  --font-body: 'Hanken Grotesk', sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #4e4639;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-primary);
+}
+
+/* ==========================================================================
+   PRELOADER
+   ========================================================================== */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+.preloader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.brand-badge {
+  font-family: var(--font-headline);
+  font-size: 1.2rem;
+  letter-spacing: 6px;
+  color: var(--gold-primary);
+  border-bottom: 1px solid var(--gold-primary);
+  padding-bottom: 4px;
+}
+
+.loader-title {
+  font-family: var(--font-headline);
+  font-size: 2.2rem;
+  font-weight: 400;
+  letter-spacing: 4px;
+  color: #ffffff;
+}
+
+.loader-ring-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.loader-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 4;
+}
+
+.ring-fill {
+  fill: none;
+  stroke: var(--gold-primary);
+  stroke-width: 4;
+  stroke-dasharray: 326;
+  stroke-dashoffset: 326;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear;
+}
+
+.loader-percent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+.loader-status {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   HERO AUTOMATIC 360° CANVAS CONTAINER
+   ========================================================================== */
+.scroll-hero-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 680px;
+  overflow: hidden;
+  background: var(--bg-dark);
+}
+
+.sticky-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #1e1d1b 0%, #131313 75%);
+}
+
+.glow-backdrop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, var(--gold-glow) 0%, rgba(0,0,0,0) 70%);
+  pointer-events: none;
+  filter: blur(50px);
+}
+
+#frame-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   SCROLL REVEAL ANIMATIONS (from code.html)
+   ========================================================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}

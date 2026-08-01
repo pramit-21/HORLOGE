@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HORLOGE | The Apex of Timekeeping</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400..900;1,400..900&amp;family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-container": "#201f1f",
+                        "on-background": "#e5e2e1",
+                        "tertiary-container": "#ada58d",
+                        "on-surface": "#e5e2e1",
+                        "error": "#ffb4ab",
+                        "secondary": "#c8c6c5",
+                        "on-primary": "#412d00",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "primary-container": "#c5a059",
+                        "inverse-primary": "#775a19",
+                        "surface": "#131313",
+                        "on-error": "#690005",
+                        "surface-container-high": "#2a2a2a",
+                        "primary-fixed-dim": "#e9c176",
+                        "primary-fixed": "#ffdea5",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#5d4201",
+                        "surface-tint": "#e9c176",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-surface-variant": "#d1c5b4",
+                        "outline-variant": "#4e4639",
+                        "surface-variant": "#353534",
+                        "primary": "#e9c176",
+                        "on-primary-container": "#4e3700",
+                        "on-primary-fixed": "#261900",
+                        "tertiary-fixed": "#ebe2c8",
+                        "inverse-surface": "#e5e2e1",
+                        "background": "#131313",
+                        "on-secondary": "#313030",
+                        "surface-container-highest": "#353534",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#1f1c0b",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-container": "#403b28",
+                        "on-tertiary": "#35301e",
+                        "inverse-on-surface": "#313030",
+                        "on-tertiary-fixed-variant": "#4c4733",
+                        "secondary-container": "#474746",
+                        "surface-bright": "#3a3939",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-dim": "#131313",
+                        "tertiary-fixed-dim": "#cec6ad",
+                        "tertiary": "#cec6ad",
+                        "on-secondary-container": "#b7b5b4",
+                        "outline": "#9a8f80",
+                        "on-secondary-fixed": "#1c1b1b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "80px",
+                        "section-gap": "160px",
+                        "container-max": "1440px",
+                        "unit": "8px",
+                        "gutter": "32px",
+                        "margin-mobile": "24px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Bodoni Moda", "serif"],
+                        "body": ["Hanken Grotesk", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #131313;
+            color: #e5e2e1;
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+        .headline-font { font-family: 'Bodoni Moda', serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .text-gold { color: #e9c176; }
+        .bg-gold { background-color: #e9c176; }
+        .border-gold { border-color: #4e4639; }
+        
+        /* Smooth reveal animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- TopNavBar Shared Component Implementation -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant px-6 lg:px-20 py-4">
+<div class="max-w-[1440px] mx-auto flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 45.8096C19.6865 45.8096 15.4698 44.5305 11.8832 42.134C8.29667 39.7376 5.50128 36.3314 3.85056 32.3462C2.19985 28.361 1.76794 23.9758 2.60947 19.7452C3.451 15.5145 5.52816 11.6284 8.57829 8.5783C11.6284 5.52817 15.5145 3.45101 19.7452 2.60948C23.9758 1.76795 28.361 2.19986 32.3462 3.85057C36.3314 5.50129 39.7376 8.29668 42.134 11.8833C44.5305 15.4698 45.8096 19.6865 45.8096 24L24 24L24 45.8096Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-white text-xl font-bold headline-font tracking-widest">HORLOGE</h2>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" href="#">Collection</a>
+<a class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" href="#">Heritage</a>
+<a class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" href="#">Artisanship</a>
+<a class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" href="#">Inquiry</a>
+</nav>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-full text-sm font-bold uppercase tracking-wider hover:brightness-110 transition-all">
+                Inquire Now
+            </button>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative h-screen flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-background z-10"></div>
+<img class="w-full h-full object-cover" data-alt="A high-end luxury watch centered in a dark, atmospheric studio setting. The timepiece features a polished gold case and an intricate skeleton dial showing moving mechanical gears. Golden light glints off the polished surfaces, while a soft moody fog swirls in the background. The aesthetic is extremely premium, leaning into deep blacks and rich gold textures with professional product photography lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8vODqjehpSReN-Xnjyhf3AJccoUEGx43Od602Vn0FPslYIcYqUW9VUCckQbWj-h7mnNlkzgVEPX2EC8mGe1Z_Jfzhz7aSmXc38IJw-RI8qOKdPCylB7VfnoQ4wI1aI77Jh_AtBKluQMxiWU--289l72-eZVWrcrdhaMmPVzYW_0m0v_s7mGP7T9lcXGpFHtUVJLkaBTTwJriT-KNs4KVdzJKU30sHTqM7XPFCpMC8l9sgAynFSci0sw"/>
+</div>
+<div class="relative z-20 text-center px-6 max-w-4xl">
+<span class="text-primary font-semibold tracking-[0.3em] uppercase text-sm mb-6 block reveal">The Zenith of Excellence</span>
+<h1 class="text-5xl md:text-8xl headline-font text-white mb-8 reveal" style="transition-delay: 200ms;">The Apex of Timekeeping</h1>
+<p class="text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto mb-10 reveal" style="transition-delay: 400ms;">Crafted for those who define the era. A symphony of Swiss engineering and artisanal mastery.</p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center reveal" style="transition-delay: 600ms;">
+<button class="bg-primary text-on-primary px-10 py-4 rounded-full text-lg font-bold uppercase tracking-widest hover:scale-105 transition-transform">
+                        Explore Collection
+                    </button>
+<button class="border border-primary text-primary px-10 py-4 rounded-full text-lg font-bold uppercase tracking-widest hover:bg-primary/10 transition-colors">
+                        View Heritage
+                    </button>
+</div>
+</div>
+<!-- Scroll Indicator -->
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-primary/50 animate-bounce">
+<span class="text-[10px] uppercase tracking-widest">Scroll</span>
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</section>
+<!-- Features Grid -->
+<section class="py-32 px-6 lg:px-20 bg-surface">
+<div class="max-w-[1440px] mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-20">
+<div class="flex flex-col gap-6 reveal">
+<div class="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary border border-outline-variant">
+<span class="material-symbols-outlined text-4xl">precision_manufacturing</span>
+</div>
+<h3 class="text-2xl headline-font text-white">Precision Movement</h3>
+<p class="text-on-surface-variant leading-relaxed">Swiss-certified mechanical movement ensuring unparalleled accuracy, featuring a 72-hour power reserve and 35 jewel bearings.</p>
+</div>
+<div class="flex flex-col gap-6 reveal" style="transition-delay: 200ms;">
+<div class="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary border border-outline-variant">
+<span class="material-symbols-outlined text-4xl">diamond</span>
+</div>
+<h3 class="text-2xl headline-font text-white">Gold-Inlaid Bezel</h3>
+<p class="text-on-surface-variant leading-relaxed">18k solid gold accents meticulously inlaid by master goldsmiths into a brushed aerospace-grade titanium chassis.</p>
+</div>
+<div class="flex flex-col gap-6 reveal" style="transition-delay: 400ms;">
+<div class="w-16 h-16 rounded-2xl bg-surface-container flex items-center justify-center text-primary border border-outline-variant">
+<span class="material-symbols-outlined text-4xl">texture</span>
+</div>
+<h3 class="text-2xl headline-font text-white">Genuine Alligator Strap</h3>
+<p class="text-on-surface-variant leading-relaxed">Ethically sourced, hand-stitched leather from the finest tanneries in Tuscany, offering unmatched comfort and enduring style.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Heritage Story Section -->
+<section class="relative min-h-[819px] flex items-center justify-center">
+<div class="absolute inset-0">
+<div class="absolute inset-0 bg-black/70 z-10"></div>
+<div class="w-full h-full bg-cover bg-fixed bg-center" data-alt="A panoramic wide-angle view of the Swiss Jura mountains at dusk. The snow-capped peaks are bathed in a deep blue hour light, with a few warm glowing lights from a remote artisan workshop visible in the valley. The atmosphere is quiet, majestic, and timeless, reflecting the origin story of high-end horology. Cinematic, high-contrast, moody landscape photography." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCBu6wpTMBryCcmha8AEjkoBRNtfRfUKvUXIqgRvcxHPYwQbc3WN83MugIuYyWyu_JAzmPfxxsuR-k3lc2AE5HKNdX2R6__ma_8ah4keyNxJ0Kn4kCAvEch4X2kiOP9uUYZ1S9jCkCb-VYLiK2qOwEf1KAH09OPud3J2OWeC1PhiGG3dWgO9UTwFEupJz-nWUZChYgrm3I3dWLwypjyggFjRWXm9edUbakXTBQip6t1ZiTbPu8L552GeA')"></div>
+</div>
+<div class="relative z-20 max-w-3xl px-6 text-center py-20">
+<h2 class="text-sm tracking-[0.4em] uppercase text-primary mb-8 reveal">Heritage of the Swiss Alps</h2>
+<h3 class="text-4xl md:text-6xl headline-font text-white mb-10 reveal" style="transition-delay: 200ms;">Crafted in the Cradle of Time</h3>
+<div class="space-y-6 text-lg text-secondary leading-loose reveal" style="transition-delay: 400ms;">
+<p>Founded in the heart of the Jura Mountains, HORLOGE represents over two centuries of horological excellence. Our journey began in a small atelier, where time was measured not by machines, but by the steady hand and sharp eye of the master watchmaker.</p>
+<p>Today, each timepiece remains a testament to the artisan's touch—where heritage meets the zenith of modern precision. Every gear is polished by hand, and every movement is assembled with the same dedication that has defined us for generations.</p>
+</div>
+<div class="mt-12 reveal" style="transition-delay: 600ms;">
+<div class="inline-block border-b border-primary pb-2 text-primary uppercase tracking-widest text-sm cursor-pointer hover:text-white hover:border-white transition-all">
+                        Read Our Full History
+                    </div>
+</div>
+</div>
+</section>
+<!-- Gallery Grid -->
+<section class="py-32 px-6 lg:px-20 bg-background">
+<div class="max-w-[1440px] mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+<div class="max-w-xl">
+<h2 class="text-4xl md:text-5xl headline-font text-white mb-4">The Collection</h2>
+<p class="text-on-surface-variant">A curated showcase of our most prestigious models, capturing the intersection of art and engineering.</p>
+</div>
+<div class="flex gap-4">
+<button class="p-4 rounded-full border border-outline-variant text-primary hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">west</span>
+</button>
+<button class="p-4 rounded-full border border-outline-variant text-primary hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">east</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- Gallery Item 1 -->
+<div class="group relative aspect-[3/4] overflow-hidden rounded-xl cursor-pointer reveal">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Macro close-up of a gold watch crown featuring the HORLOGE logo engraved in exquisite detail. The lighting highlights the fine knurling on the edge of the crown and the brushed finish of the surrounding titanium case. The shot is crisp, high-end, and emphasizes tactile luxury." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCHwYLEJlg0m5iQn_OqnH_BsAu5rilmVduAqoX9SduyYuRblwedS4JNbs_fYrXY_kl_28sR-rDzSkiKGh_wUe5-02ZB9rI1TNmEudjVlQfTuV5zY3sEB6RJC6TvOwVLmg5wZFhlrojdzBPHfRJFknqhkM_Gga8UZxHHMPEPpeKrVIyk78XPqwKe8aW3rwI-mx_ojhmzvJaf60y_ubQf8KiUhRE1fKkJ4DFnO54ywbhgYJQ94Fp1vdNnA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
+<p class="text-primary text-xs uppercase tracking-widest mb-2">Macro Details</p>
+<h4 class="text-white text-xl headline-font">The Royal Crown</h4>
+</div>
+</div>
+<!-- Gallery Item 2 -->
+<div class="group relative aspect-[3/4] overflow-hidden rounded-xl cursor-pointer reveal" style="transition-delay: 150ms;">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A luxury watch laying on a piece of dark, textured slate stone. A sliver of warm golden light cuts across the watch dial, revealing the shimmering sunray finish and the raised gold hour markers. Minimalist, expensive aesthetic with sharp contrasts and deep shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVgadfm7-nk53uPW1NOas6KjX2FpUVvt-CwJOqJ9jDaC-C0jqMtpBrtM7uG2nJgMkULrIe8o1UN4P4UXKWGMqsMxQVHhns6DHB-NsL-Vm0ZTpqdckdtORGDZwj9eNaHNA3pCuMj0xyW1YhkPNojueBjNtXA97432sFDY-gSVjhwnHCAoqGyeW_roO-KeJ_F0PFygVQf64LoMtbMewRvA63qVoHl4a2NzmLLBd0wl02JKz7kMPDL173nA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
+<p class="text-primary text-xs uppercase tracking-widest mb-2">Limited Edition</p>
+<h4 class="text-white text-xl headline-font">Obsidian Series</h4>
+</div>
+</div>
+<!-- Gallery Item 3 -->
+<div class="group relative aspect-[3/4] overflow-hidden rounded-xl cursor-pointer reveal" style="transition-delay: 300ms;">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Side profile view of a slim luxury watch showing the elegant curve of the lugs and the seamless integration of the dark alligator leather strap. The stitching on the strap is perfectly uniform. The background is a soft-focus bokeh of warm interior lights, suggesting a high-end lounge environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-EpLpRsdOEk9KuZx9MLYEsqdrVqU4n7pr67eR0D_bMlqGH-e86qZxy0dF8f_NyqROX2APg8gbD3FmFF_ZAve37TEicIhTY3sT7C6OoTE8L0Pkp7ktkCr9XQDQumHVTL4Y5BS_2r-NmIfiiwmLVKqr9XqTuXQIH17JDbtNA-RjnaCdA66FlzlO65ix0f3hCIXbE91X6CPBsnI6tUtdQgQ5xeomk-joGvXpgQ0HSnOog7DhaVX7sIwQOg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
+<p class="text-primary text-xs uppercase tracking-widest mb-2">Ergonomics</p>
+<h4 class="text-white text-xl headline-font">Artisan Strap</h4>
+</div>
+</div>
+<!-- Gallery Item 4 -->
+<div class="group relative aspect-[3/4] overflow-hidden rounded-xl cursor-pointer reveal" style="transition-delay: 450ms;">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Exposed case back of a mechanical watch showing the intricate movement, oscillating rotor, and delicate engravings. The metal is finished with Cotes de Geneve stripes. The image uses a shallow depth of field to focus on the balance wheel in motion. Pure mechanical art." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSdLWo2AP-mZiBJyQPnbx0Ugr_v5pRHRmV3oBNwdI0h8Z23dU96df8_XgubZ9xzUd7lZxUWIOXr3-gWZqJj9O5poNCILHdZG-tFPl3Loxq1JeuAQEzs1QfKpXwlY1ZgdAIIiV65xWfKK5D0efhKYBukP4HinSMJ3PchenxkpQQeHXaMRGtjPhUNFi1_PxXYObDBKrPLcjBqrsXHPll8rjcZyVUSKYv3aJaM5j_urScD_7Iwx3IsyEPwg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-6">
+<p class="text-primary text-xs uppercase tracking-widest mb-2">Engineering</p>
+<h4 class="text-white text-xl headline-font">Skeleton Heart</h4>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter / Inquiry CTA -->
+<section class="py-32 px-6 bg-surface-container-low border-t border-outline-variant">
+<div class="max-w-4xl mx-auto text-center reveal">
+<h2 class="text-4xl md:text-5xl headline-font text-white mb-6">Begin Your Journey</h2>
+<p class="text-lg text-on-surface-variant mb-12">Register for an exclusive consultation with our horological experts or join our private list for upcoming releases.</p>
+<form class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+<input class="flex-1 bg-surface-container-high border border-outline-variant rounded-full px-8 py-4 text-white focus:outline-none focus:border-primary transition-colors" placeholder="Email Address" type="email"/>
+<button class="bg-primary text-on-primary px-10 py-4 rounded-full font-bold uppercase tracking-widest hover:brightness-110 transition-all">
+                        Inquire
+                    </button>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-background border-t border-outline-variant pt-20 pb-10 px-6 lg:px-20">
+<div class="max-w-[1440px] mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-4 text-white mb-8">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 45.8096C19.6865 45.8096 15.4698 44.5305 11.8832 42.134C8.29667 39.7376 5.50128 36.3314 3.85056 32.3462C2.19985 28.361 1.76794 23.9758 2.60947 19.7452C3.451 15.5145 5.52816 11.6284 8.57829 8.5783C11.6284 5.52817 15.5145 3.45101 19.7452 2.60948C23.9758 1.76795 28.361 2.19986 32.3462 3.85057C36.3314 5.50129 39.7376 8.29668 42.134 11.8833C44.5305 15.4698 45.8096 19.6865 45.8096 24L24 24L24 45.8096Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-white text-lg font-bold headline-font tracking-widest">HORLOGE</h2>
+</div>
+<p class="text-on-surface-variant leading-relaxed">Defining the peak of Swiss timekeeping since 1824. Exceptional precision for the exceptional few.</p>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6 uppercase tracking-widest text-sm">Collection</h4>
+<ul class="space-y-4 text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Heritage Classic</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Skeleton Series</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Obsidion Gold</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Limited Editions</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6 uppercase tracking-widest text-sm">Experience</h4>
+<ul class="space-y-4 text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Artisanship</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Private Viewing</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Boutique Finder</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Care &amp; Service</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6 uppercase tracking-widest text-sm">Connect</h4>
+<div class="flex gap-4 mb-6">
+<a class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all" href="#">
+<span class="material-symbols-outlined text-sm">share</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all" href="#">
+<span class="material-symbols-outlined text-sm">public</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-primary hover:text-on-primary transition-all" href="#">
+<span class="material-symbols-outlined text-sm">mail</span>
+</a>
+</div>
+<p class="text-xs text-on-surface-variant uppercase tracking-widest">Le Locle, Switzerland</p>
+</div>
+</div>
+<div class="pt-10 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-6">
+<p class="text-xs text-on-surface-variant uppercase tracking-[0.2em]">© 2024 HORLOGE MANUFACTURE. ALL RIGHTS RESERVED.</p>
+<div class="flex gap-8 text-[10px] text-on-surface-variant uppercase tracking-widest">
+<a class="hover:text-white" href="#">Privacy Policy</a>
+<a class="hover:text-white" href="#">Terms of Service</a>
+<a class="hover:text-white" href="#">Impressum</a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Simple scroll reveal observer
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Parallax effect for the Heritage section image
+        window.addEventListener('scroll', () => {
+            const parallax = document.querySelector('[data-alt*="Jura mountains"]');
+            let scrollPosition = window.pageYOffset;
+            if (parallax) {
+                parallax.style.backgroundPositionY = (scrollPosition * 0.4) + 'px';
+            }
+        });
+    </script>
+</body></html>
