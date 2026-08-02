@@ -19,51 +19,29 @@ const state = {
 
 // DOM References
 const elements = {
-  preloader: document.getElementById('preloader'),
-  ringProgress: document.getElementById('ring-progress'),
-  loaderPercent: document.getElementById('loader-percent'),
-  loaderStatus: document.getElementById('loader-status'),
   canvas: document.getElementById('frame-canvas'),
   ctx: document.getElementById('frame-canvas')?.getContext('2d')
 };
 
 // 1. Preload 240 Image Frames
 function preloadFrames() {
-  return new Promise((resolve) => {
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
-      const img = new Image();
-      const frameNum = String(i).padStart(3, '0');
-      img.src = `${FRAME_PATH_PREFIX}${frameNum}${FRAME_EXTENSION}`;
+  for (let i = 1; i <= TOTAL_FRAMES; i++) {
+    const img = new Image();
+    const frameNum = String(i).padStart(3, '0');
+    img.src = `${FRAME_PATH_PREFIX}${frameNum}${FRAME_EXTENSION}`;
 
-      img.onload = () => {
-        state.loadedCount++;
-        updateLoadingProgress();
-        if (state.loadedCount === TOTAL_FRAMES) {
-          resolve();
-        }
-      };
+    img.onload = () => {
+      state.loadedCount++;
+      if (state.loadedCount === 1) {
+        renderFrame(1);
+      }
+    };
 
-      img.onerror = () => {
-        state.loadedCount++;
-        updateLoadingProgress();
-        if (state.loadedCount === TOTAL_FRAMES) {
-          resolve();
-        }
-      };
+    img.onerror = () => {
+      state.loadedCount++;
+    };
 
-      state.frames.push(img);
-    }
-  });
-}
-
-function updateLoadingProgress() {
-  const percent = Math.floor((state.loadedCount / TOTAL_FRAMES) * 100);
-  const offset = 326 - (326 * percent) / 100;
-  
-  if (elements.ringProgress) elements.ringProgress.style.strokeDashoffset = offset;
-  if (elements.loaderPercent) elements.loaderPercent.textContent = `${percent}%`;
-  if (elements.loaderStatus) {
-    elements.loaderStatus.textContent = `Preloading Frame ${state.loadedCount} of ${TOTAL_FRAMES}...`;
+    state.frames.push(img);
   }
 }
 
@@ -231,18 +209,14 @@ function bindEvents() {
 }
 
 // Initialize Application
-async function init() {
+function init() {
   bindEvents();
   initScrollReveals();
   initSmoothNavigation();
   initInquiryForm();
-  await preloadFrames();
-  
-  setTimeout(() => {
-    if (elements.preloader) elements.preloader.classList.add('hidden');
-    resizeCanvas();
-    requestAnimationFrame(autoPlayAnimationLoop);
-  }, 400);
+  preloadFrames();
+  resizeCanvas();
+  requestAnimationFrame(autoPlayAnimationLoop);
 }
 
 init();
