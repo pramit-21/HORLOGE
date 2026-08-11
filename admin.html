@@ -709,11 +709,48 @@
             <label class="form-label" for="li-password">Password</label>
             <input class="form-input" id="li-password" type="password" placeholder="Your password" required
               autocomplete="current-password" />
+            <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+              <button type="button" id="forgot-btn" style="background:none; border:none; color:var(--gold); font-size:0.8rem; cursor:pointer; font-family:inherit; text-decoration:underline;">
+                Forgot Username or Password?
+              </button>
+            </div>
           </div>
           <button class="btn-gold" type="submit">Sign In to Dashboard</button>
         </form>
         <div class="auth-note">Admin access is restricted to authorized personnel only.<br>New registrations are closed.
         </div>
+      </div>
+
+      <!-- Forgot / Reset Credentials Panel -->
+      <div id="reset-panel" style="display:none;">
+        <div class="auth-badge">
+          <span class="material-symbols-outlined" style="font-size:14px">lock_reset</span>
+          Account Recovery
+        </div>
+        <h1 class="auth-heading">Reset Credentials</h1>
+        <p class="auth-sub">Enter your registered Admin Name to verify identity and set a new Username & Password.</p>
+        <div id="reset-error" class="auth-error"></div>
+        <div id="reset-success" class="auth-success" style="background:rgba(100,200,120,0.1); border:1px solid rgba(100,200,120,0.3); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#7dd0a0; margin-bottom:16px; display:none;"></div>
+        <form id="reset-form" autocomplete="off">
+          <div class="form-group">
+            <label class="form-label" for="reset-name">Registered Admin Name</label>
+            <input class="form-input" id="reset-name" type="text" placeholder="e.g. Pramit" required autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reset-username">New Username</label>
+            <input class="form-input" id="reset-username" type="text" placeholder="Enter new username" required autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reset-password">New Password</label>
+            <input class="form-input" id="reset-password" type="password" placeholder="Min 8 characters" required autocomplete="new-password" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reset-confirm">Confirm New Password</label>
+            <input class="form-input" id="reset-confirm" type="password" placeholder="Re-enter new password" required autocomplete="new-password" />
+          </div>
+          <button class="btn-gold" type="submit">Update Credentials & Sign In</button>
+          <button type="button" id="back-to-login-btn" style="width:100%; background:transparent; border:1px solid var(--border); color:var(--muted); border-radius:10px; padding:12px; margin-top:12px; font-family:'Hanken Grotesk',sans-serif; font-size:0.85rem; cursor:pointer; transition:all 0.2s ease;">← Back to Sign In</button>
+        </form>
       </div>
     </div>
   </div>
@@ -729,6 +766,10 @@
       </div>
       <div class="dash-user">
         <span class="dash-username">Signed in as <strong id="dash-admin-name">Admin</strong></span>
+        <button class="btn-logout" id="change-cred-btn" style="border-color:rgba(233,193,118,0.3); color:var(--gold); margin-right:8px;">
+          <span class="material-symbols-outlined" style="font-size:16px">key</span>
+          Change Credentials
+        </button>
         <button class="btn-logout" id="logout-btn">
           <span class="material-symbols-outlined" style="font-size:16px">logout</span>
           Logout
@@ -819,6 +860,33 @@
     </footer>
   </div>
 
+  <!-- Change Credentials Modal (For Logged In Admin) -->
+  <div id="cred-modal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:20px;">
+    <div class="auth-card" style="position:relative; width:100%; max-width:440px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="font-family:'Bodoni Moda',serif; font-size:1.4rem; color:#fff;">Change Credentials</h3>
+        <button id="close-cred-modal" style="background:none; border:none; color:var(--muted); font-size:1.5rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+      <div id="dash-cred-error" class="auth-error"></div>
+      <div id="dash-cred-success" class="auth-success" style="background:rgba(100,200,120,0.1); border:1px solid rgba(100,200,120,0.3); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#7dd0a0; margin-bottom:16px; display:none;"></div>
+      <form id="dash-cred-form">
+        <div class="form-group">
+          <label class="form-label" for="dc-username">New Username</label>
+          <input class="form-input" id="dc-username" type="text" placeholder="Enter new username" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="dc-password">New Password</label>
+          <input class="form-input" id="dc-password" type="password" placeholder="Min 8 characters" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="dc-confirm">Confirm Password</label>
+          <input class="form-input" id="dc-confirm" type="password" placeholder="Re-enter password" required />
+        </div>
+        <button class="btn-gold" type="submit">Save New Credentials</button>
+      </form>
+    </div>
+  </div>
+
   <script>
     // ============================================================
     //  HORLOGE ADMIN PANEL LOGIC
@@ -836,13 +904,6 @@
     const SESSION_KEY = 'horloge_session';
     const BOOKINGS_KEY = 'horloge_bookings';
 
-    const DEFAULT_ADMIN = {
-      name: 'Pramit',
-      username: 'pramit007',
-      passwordHash: '3bd655cb9ae44d341eb41c122b81bcda5bc9ea7776030c7a3eddd054fb140473',
-      createdAt: 1700000000000
-    };
-
     // Simple hash (SHA-256 via SubtleCrypto)
     async function hashPassword(password) {
       const msgBuffer = new TextEncoder().encode(password + 'horloge_salt_2026');
@@ -856,14 +917,26 @@
     const dashSection = document.getElementById('dashboard');
     const signupPanel = document.getElementById('signup-panel');
     const loginPanel = document.getElementById('login-panel');
+    const resetPanel = document.getElementById('reset-panel');
     const signupForm = document.getElementById('signup-form');
     const loginForm = document.getElementById('login-form');
+    const resetForm = document.getElementById('reset-form');
     const signupError = document.getElementById('signup-error');
     const loginError = document.getElementById('login-error');
+    const resetError = document.getElementById('reset-error');
+    const resetSuccess = document.getElementById('reset-success');
+    const forgotBtn = document.getElementById('forgot-btn');
+    const backToLoginBtn = document.getElementById('back-to-login-btn');
     const logoutBtn = document.getElementById('logout-btn');
     const refreshBtn = document.getElementById('refresh-btn');
     const clearBtn = document.getElementById('clear-btn');
     const searchInput = document.getElementById('search-input');
+    const changeCredBtn = document.getElementById('change-cred-btn');
+    const credModal = document.getElementById('cred-modal');
+    const closeCredModal = document.getElementById('close-cred-modal');
+    const dashCredForm = document.getElementById('dash-cred-form');
+    const dashCredError = document.getElementById('dash-cred-error');
+    const dashCredSuccess = document.getElementById('dash-cred-success');
 
     // ---- Utility ----
     function showError(el, msg) {
@@ -876,11 +949,7 @@
     }
 
     function getAdmin() {
-      try {
-        const stored = JSON.parse(localStorage.getItem(ADMIN_KEY));
-        if (stored && stored.username && stored.passwordHash) return stored;
-      } catch {}
-      return DEFAULT_ADMIN;
+      try { return JSON.parse(localStorage.getItem(ADMIN_KEY)); } catch { return null; }
     }
 
     function getSession() {
@@ -1028,6 +1097,7 @@
       authSection.style.display = '';
 
       const admin = getAdmin();
+      resetPanel.style.display = 'none';
       if (admin) {
         signupPanel.style.display = 'none';
         loginPanel.style.display = '';
@@ -1048,6 +1118,23 @@
         localStorage.removeItem(SESSION_KEY);
         showAuth();
       }
+    }
+
+    // ---- Forgot / Back Handlers ----
+    if (forgotBtn) {
+      forgotBtn.addEventListener('click', () => {
+        loginPanel.style.display = 'none';
+        signupPanel.style.display = 'none';
+        resetPanel.style.display = '';
+        hideError(resetError);
+        resetSuccess.style.display = 'none';
+      });
+    }
+
+    if (backToLoginBtn) {
+      backToLoginBtn.addEventListener('click', () => {
+        showAuth();
+      });
     }
 
     // ---- Signup ----
@@ -1118,6 +1205,11 @@
       const password = document.getElementById('li-password').value;
       const admin = getAdmin();
 
+      if (!admin) {
+        showError(loginError, 'No admin account found. Please contact the developer.');
+        return;
+      }
+
       const btn = loginForm.querySelector('.btn-gold');
       btn.textContent = 'Signing In...';
       btn.disabled = true;
@@ -1125,19 +1217,15 @@
       try {
         const hash = await hashPassword(password);
 
-        const isDefault = (username === DEFAULT_ADMIN.username && hash === DEFAULT_ADMIN.passwordHash);
-        const isStored = admin && (username === admin.username && hash === admin.passwordHash);
-
-        if (!isDefault && !isStored) {
+        if (username !== admin.username || hash !== admin.passwordHash) {
           showError(loginError, 'Incorrect username or password.');
           btn.textContent = 'Sign In to Dashboard';
           btn.disabled = false;
           return;
         }
 
-        const activeAdmin = isDefault ? DEFAULT_ADMIN : admin;
         const newToken = crypto.randomUUID();
-        const updated = { ...activeAdmin, sessionToken: newToken };
+        const updated = { ...admin, sessionToken: newToken };
         localStorage.setItem(ADMIN_KEY, JSON.stringify(updated));
         localStorage.setItem(SESSION_KEY, newToken);
 
@@ -1145,6 +1233,152 @@
       } catch (err) {
         showError(loginError, 'Login failed. Please try again.');
         btn.textContent = 'Sign In to Dashboard';
+        btn.disabled = false;
+      }
+    });
+
+    // ---- Reset Credentials Form ----
+    resetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError(resetError);
+      resetSuccess.style.display = 'none';
+
+      const admin = getAdmin();
+      if (!admin) {
+        showError(resetError, 'No admin account found. Please create an admin account first.');
+        return;
+      }
+
+      const inputName = document.getElementById('reset-name').value.trim();
+      const newUsername = document.getElementById('reset-username').value.trim().toLowerCase();
+      const newPassword = document.getElementById('reset-password').value;
+      const confirmPassword = document.getElementById('reset-confirm').value;
+
+      if (inputName.toLowerCase() !== admin.name.toLowerCase()) {
+        showError(resetError, 'Admin Name does not match registered account records.');
+        return;
+      }
+      if (!newUsername || newUsername.length < 3) {
+        showError(resetError, 'New Username must be at least 3 characters.');
+        return;
+      }
+      if (newPassword.length < 8) {
+        showError(resetError, 'New Password must be at least 8 characters.');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        showError(resetError, 'Passwords do not match.');
+        return;
+      }
+
+      const btn = resetForm.querySelector('.btn-gold');
+      btn.textContent = 'Updating Credentials...';
+      btn.disabled = true;
+
+      try {
+        const hash = await hashPassword(newPassword);
+        const sessionToken = crypto.randomUUID();
+
+        const updatedAdmin = {
+          ...admin,
+          username: newUsername,
+          passwordHash: hash,
+          sessionToken
+        };
+
+        localStorage.setItem(ADMIN_KEY, JSON.stringify(updatedAdmin));
+        localStorage.setItem(SESSION_KEY, sessionToken);
+
+        resetSuccess.textContent = 'Credentials updated! Redirecting to dashboard...';
+        resetSuccess.style.display = 'block';
+
+        setTimeout(() => {
+          btn.textContent = 'Update Credentials & Sign In';
+          btn.disabled = false;
+          showDashboard();
+        }, 1200);
+      } catch (err) {
+        showError(resetError, 'Failed to update credentials. Please try again.');
+        btn.textContent = 'Update Credentials & Sign In';
+        btn.disabled = false;
+      }
+    });
+
+    // ---- Change Credentials Modal (Dashboard) ----
+    if (changeCredBtn) {
+      changeCredBtn.addEventListener('click', () => {
+        const admin = getAdmin();
+        if (admin) {
+          document.getElementById('dc-username').value = admin.username;
+        }
+        hideError(dashCredError);
+        dashCredSuccess.style.display = 'none';
+        credModal.style.display = 'flex';
+      });
+    }
+
+    if (closeCredModal) {
+      closeCredModal.addEventListener('click', () => {
+        credModal.style.display = 'none';
+      });
+    }
+
+    if (credModal) {
+      credModal.addEventListener('click', (e) => {
+        if (e.target === credModal) credModal.style.display = 'none';
+      });
+    }
+
+    dashCredForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError(dashCredError);
+      dashCredSuccess.style.display = 'none';
+
+      const admin = getAdmin();
+      if (!admin) return;
+
+      const newUsername = document.getElementById('dc-username').value.trim().toLowerCase();
+      const newPassword = document.getElementById('dc-password').value;
+      const confirmPassword = document.getElementById('dc-confirm').value;
+
+      if (!newUsername || newUsername.length < 3) {
+        showError(dashCredError, 'Username must be at least 3 characters.');
+        return;
+      }
+      if (newPassword.length < 8) {
+        showError(dashCredError, 'Password must be at least 8 characters.');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        showError(dashCredError, 'Passwords do not match.');
+        return;
+      }
+
+      const btn = dashCredForm.querySelector('.btn-gold');
+      btn.textContent = 'Saving...';
+      btn.disabled = true;
+
+      try {
+        const hash = await hashPassword(newPassword);
+        const updated = {
+          ...admin,
+          username: newUsername,
+          passwordHash: hash
+        };
+        localStorage.setItem(ADMIN_KEY, JSON.stringify(updated));
+
+        dashCredSuccess.textContent = 'Credentials updated successfully!';
+        dashCredSuccess.style.display = 'block';
+
+        setTimeout(() => {
+          btn.textContent = 'Save New Credentials';
+          btn.disabled = false;
+          credModal.style.display = 'none';
+          renderDashboard();
+        }, 1000);
+      } catch (err) {
+        showError(dashCredError, 'Failed to update credentials.');
+        btn.textContent = 'Save New Credentials';
         btn.disabled = false;
       }
     });
