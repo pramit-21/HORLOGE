@@ -4,6 +4,7 @@
  */
 
 import { saveInquiryToSupabase } from './supabase.js';
+import './view3d.js';
 
 const TOTAL_FRAMES = 240;
 const FRAME_PATH_PREFIX = './frames/ezgif-frame-';

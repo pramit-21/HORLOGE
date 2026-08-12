@@ -3,6 +3,7 @@
  */
 
 import { saveInquiryToSupabase } from './supabase.js';
+import './view3d.js';
 
 // 1. Scroll Reveal Observer
 function initScrollReveals() {
