@@ -202,17 +202,39 @@ function createWatch3D(dialImageUrl, materialPreset) {
   const dialGeo = new THREE.CircleGeometry(dialRadius, 64);
   
   const textureLoader = new THREE.TextureLoader();
-  const dialTexture = textureLoader.load(dialImageUrl, (tex) => {
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.minFilter = THREE.LinearFilter;
-    tex.magFilter = THREE.LinearFilter;
-  });
+  const resolvedUrl = (dialImageUrl && !dialImageUrl.startsWith('http') && !dialImageUrl.startsWith('/') && !dialImageUrl.startsWith('data:') && !dialImageUrl.startsWith('./'))
+    ? '/' + dialImageUrl
+    : dialImageUrl;
 
   const dialMat = new THREE.MeshStandardMaterial({
-    map: dialTexture,
     roughness: 0.4,
     metalness: 0.1
   });
+
+  const dialTexture = textureLoader.load(
+    resolvedUrl || dialImageUrl,
+    (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.generateMipmaps = true;
+      dialMat.map = tex;
+      dialMat.needsUpdate = true;
+    },
+    undefined,
+    (err) => {
+      console.warn('Texture load fallback attempt:', dialImageUrl, err);
+      if (resolvedUrl !== dialImageUrl) {
+        textureLoader.load(dialImageUrl, (fallbackTex) => {
+          fallbackTex.colorSpace = THREE.SRGBColorSpace;
+          dialMat.map = fallbackTex;
+          dialMat.needsUpdate = true;
+        });
+      }
+    }
+  );
+  dialMat.map = dialTexture;
+
   const dialMesh = new THREE.Mesh(dialGeo, dialMat);
   dialMesh.position.z = caseHeight / 2 + 0.04;
   watchGroup.add(dialMesh);
