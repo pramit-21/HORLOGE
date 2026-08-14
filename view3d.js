@@ -149,7 +149,7 @@ function renderVideoMode(videoSrc) {
 
   canvasContainer.innerHTML = `
     <div class="relative w-full h-full flex items-center justify-center bg-black">
-      <video id="watch-3d-video" class="w-full h-full object-contain" autoplay loop muted playsinline controls>
+      <video id="watch-3d-video" class="w-full h-full object-contain" autoplay loop muted playsinline>
         <source src="${videoSrc}" type="video/mp4" />
         Your browser does not support HTML5 video.
       </video>
