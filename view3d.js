@@ -1,6 +1,6 @@
 /**
  * HORLOGE 3D WATCH INTERACTIVE ENGINE
- * Powered by Three.js & OrbitControls
+ * Powered by Three.js & OrbitControls with Video 360° Support
  */
 
 import * as THREE from 'three';
@@ -19,6 +19,8 @@ let minuteHand = null;
 let secondHand = null;
 let caseMaterialMesh = null;
 let currentAutoRotate = true;
+
+let currentParams = { modelName: '', imgSrc: '', materialType: '', videoSrc: '' };
 
 // Material presets for 3D watch casing
 const MATERIAL_PRESETS = {
@@ -40,6 +42,28 @@ function getMaterialPreset(materialType = '') {
   return MATERIAL_PRESETS.gold;
 }
 
+// Stop and dispose Three.js scene
+function stopThreeScene() {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+  if (renderer) {
+    renderer.dispose();
+    renderer = null;
+  }
+  if (scene) {
+    scene.traverse((obj) => {
+      if (obj.geometry) obj.geometry.dispose();
+      if (obj.material) {
+        if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose());
+        else obj.material.dispose();
+      }
+    });
+    scene = null;
+  }
+}
+
 // 1. Create Modal DOM Structure
 function createModalDOM() {
   if (document.getElementById('watch-3d-modal')) return;
@@ -49,7 +73,7 @@ function createModalDOM() {
       <div class="relative w-full max-w-5xl h-[85vh] bg-surface-container-low border border-outline-variant/80 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
         
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/60 bg-surface/80 backdrop-blur-md z-10">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant/60 bg-surface/80 backdrop-blur-md z-10 gap-4">
           <div class="flex items-center gap-3">
             <div class="size-8 rounded-full bg-primary/10 border border-primary/40 flex items-center justify-center text-primary">
               <span class="material-symbols-outlined text-lg">3d_rotation</span>
@@ -59,42 +83,24 @@ function createModalDOM() {
               <p id="watch-3d-subtitle" class="text-xs text-on-surface-variant font-medium">Real-time 3D Interactive Renderer • Drag to rotate 360°</p>
             </div>
           </div>
+
+          <!-- Mode Switcher Tabs (Video vs 3D Canvas) -->
+          <div id="watch-3d-mode-tabs" class="hidden flex items-center gap-1.5 bg-surface-container-high p-1 rounded-full border border-outline-variant">
+            <button id="btn-mode-video" class="px-3.5 py-1 rounded-full text-xs font-bold transition-all bg-primary text-on-primary shadow-sm flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">videocam</span> 360° Video
+            </button>
+            <button id="btn-mode-interactive" class="px-3.5 py-1 rounded-full text-xs font-bold transition-all text-on-surface-variant hover:text-white flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">view_in_ar</span> Interactive 3D
+            </button>
+          </div>
           
           <button id="watch-3d-close" class="size-10 rounded-full bg-surface-container hover:bg-surface-bright text-on-surface hover:text-white transition-colors flex items-center justify-center border border-outline-variant">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
 
-        <!-- 3D Canvas Area -->
+        <!-- 3D Canvas / Video Container Area -->
         <div id="watch-3d-canvas-container" class="relative flex-1 w-full h-full bg-gradient-to-b from-surface-container-lowest via-surface to-background cursor-grab active:cursor-grabbing overflow-hidden">
-          
-          <!-- Floating Overlay Controls -->
-          <div class="absolute top-4 left-4 z-20 flex flex-wrap gap-2">
-            <button id="btn-3d-autorotate" class="px-3.5 py-1.5 rounded-full bg-surface/80 border border-outline-variant text-xs text-primary font-semibold hover:border-primary transition-all flex items-center gap-1.5 backdrop-blur-md">
-              <span class="material-symbols-outlined text-sm">sync</span>
-              <span id="txt-3d-autorotate">Pause Auto-Rotate</span>
-            </button>
-            <button id="btn-3d-reset" class="px-3.5 py-1.5 rounded-full bg-surface/80 border border-outline-variant text-xs text-on-surface font-semibold hover:text-white hover:border-primary transition-all flex items-center gap-1.5 backdrop-blur-md">
-              <span class="material-symbols-outlined text-sm">restart_alt</span> Reset View
-            </button>
-          </div>
-
-          <!-- Material Finish Selector -->
-          <div class="absolute top-4 right-4 z-20 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface/80 border border-outline-variant backdrop-blur-md">
-            <span class="text-[10px] uppercase text-on-surface-variant font-bold tracking-wider mr-1">Finish:</span>
-            <button data-finish="gold" title="18K Gold" class="size-5 rounded-full bg-[#e9c176] border border-white/40 hover:scale-110 transition-transform"></button>
-            <button data-finish="rosegold" title="Rose Gold" class="size-5 rounded-full bg-[#e0a98b] border border-white/40 hover:scale-110 transition-transform"></button>
-            <button data-finish="platinum" title="Platinum" class="size-5 rounded-full bg-[#e5e8ec] border border-white/40 hover:scale-110 transition-transform"></button>
-            <button data-finish="obsidian" title="Obsidian Black" class="size-5 rounded-full bg-[#222224] border border-white/40 hover:scale-110 transition-transform"></button>
-          </div>
-
-          <!-- Bottom Control Bar / Guidance -->
-          <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 px-5 py-2 rounded-full bg-black/60 border border-white/10 backdrop-blur-md text-xs text-on-surface-variant flex items-center gap-3">
-            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-primary">drag_pan</span> Drag to Rotate</span>
-            <span class="text-white/20">•</span>
-            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-primary">zoom_in</span> Scroll to Zoom</span>
-          </div>
-
         </div>
 
       </div>
@@ -117,20 +123,75 @@ function createModalDOM() {
     }
   });
 
-  document.getElementById('btn-3d-autorotate').addEventListener('click', () => {
-    currentAutoRotate = !currentAutoRotate;
-    if (controls) controls.autoRotate = currentAutoRotate;
-    const txt = document.getElementById('txt-3d-autorotate');
-    if (txt) txt.textContent = currentAutoRotate ? 'Pause Auto-Rotate' : 'Start Auto-Rotate';
-  });
+  const btnModeVideo = document.getElementById('btn-mode-video');
+  const btnModeInteractive = document.getElementById('btn-mode-interactive');
 
-  document.getElementById('btn-3d-reset').addEventListener('click', () => {
-    if (controls && camera) {
-      camera.position.set(0, 0, 4.5);
-      controls.target.set(0, 0, 0);
-      controls.update();
-    }
-  });
+  if (btnModeVideo) {
+    btnModeVideo.addEventListener('click', () => {
+      btnModeVideo.className = "px-3.5 py-1 rounded-full text-xs font-bold transition-all bg-primary text-on-primary shadow-sm flex items-center gap-1";
+      if (btnModeInteractive) btnModeInteractive.className = "px-3.5 py-1 rounded-full text-xs font-bold transition-all text-on-surface-variant hover:text-white flex items-center gap-1";
+      renderVideoMode(currentParams.videoSrc);
+    });
+  }
+
+  if (btnModeInteractive) {
+    btnModeInteractive.addEventListener('click', () => {
+      btnModeInteractive.className = "px-3.5 py-1 rounded-full text-xs font-bold transition-all bg-primary text-on-primary shadow-sm flex items-center gap-1";
+      if (btnModeVideo) btnModeVideo.className = "px-3.5 py-1 rounded-full text-xs font-bold transition-all text-on-surface-variant hover:text-white flex items-center gap-1";
+      renderInteractive3DMode(currentParams.imgSrc, currentParams.materialType);
+    });
+  }
+
+  window.addEventListener('resize', onWindowResize);
+}
+
+// 2. Render Video Showcase Mode
+function renderVideoMode(videoSrc) {
+  stopThreeScene();
+
+  const subtitleEl = document.getElementById('watch-3d-subtitle');
+  if (subtitleEl) subtitleEl.textContent = 'Ultra-HD 360° Velvet Platform Rotation • Studio Showcase';
+
+  if (!canvasContainer) return;
+  canvasContainer.className = "relative flex-1 w-full h-full bg-black flex items-center justify-center overflow-hidden";
+
+  canvasContainer.innerHTML = `
+    <div class="relative w-full h-full flex items-center justify-center bg-black">
+      <video id="watch-3d-video" class="w-full h-full object-contain" autoplay loop muted playsinline controls>
+        <source src="${videoSrc}" type="video/mp4" />
+        Your browser does not support HTML5 video.
+      </video>
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 px-5 py-2 rounded-full bg-black/75 border border-white/15 backdrop-blur-md text-xs text-on-surface-variant flex items-center gap-3 pointer-events-none">
+        <span class="flex items-center gap-1 text-primary"><span class="material-symbols-outlined text-sm">3d_rotation</span> Studio 360° Velvet Showcase</span>
+        <span class="text-white/20">•</span>
+        <span class="text-white/80 font-mono text-[11px]">4K Ultra-HD Rotation</span>
+      </div>
+    </div>
+  `;
+}
+
+// 3. Bind Interactive 3D Control Buttons
+function bind3DControlListeners() {
+  const btnAutorotate = document.getElementById('btn-3d-autorotate');
+  if (btnAutorotate) {
+    btnAutorotate.addEventListener('click', () => {
+      currentAutoRotate = !currentAutoRotate;
+      if (controls) controls.autoRotate = currentAutoRotate;
+      const txt = document.getElementById('txt-3d-autorotate');
+      if (txt) txt.textContent = currentAutoRotate ? 'Pause Auto-Rotate' : 'Start Auto-Rotate';
+    });
+  }
+
+  const btnReset = document.getElementById('btn-3d-reset');
+  if (btnReset) {
+    btnReset.addEventListener('click', () => {
+      if (controls && camera) {
+        camera.position.set(0, 0, 4.5);
+        controls.target.set(0, 0, 0);
+        controls.update();
+      }
+    });
+  }
 
   document.querySelectorAll('[data-finish]').forEach((btn) => {
     btn.addEventListener('click', (e) => {
@@ -143,11 +204,57 @@ function createModalDOM() {
       }
     });
   });
-
-  window.addEventListener('resize', onWindowResize);
 }
 
-// 2. Window Resize Handler
+// 4. Render Interactive 3D Canvas Mode
+function renderInteractive3DMode(imgSrc, materialType) {
+  const videoEl = document.getElementById('watch-3d-video');
+  if (videoEl) videoEl.pause();
+
+  const subtitleEl = document.getElementById('watch-3d-subtitle');
+  if (subtitleEl) subtitleEl.textContent = `Finish: ${materialType || 'Custom Manufacture'} • Real-time Interactive 3D Model`;
+
+  if (!canvasContainer) return;
+  canvasContainer.className = "relative flex-1 w-full h-full bg-gradient-to-b from-surface-container-lowest via-surface to-background cursor-grab active:cursor-grabbing overflow-hidden";
+
+  canvasContainer.innerHTML = `
+    <!-- Floating Overlay Controls -->
+    <div class="absolute top-4 left-4 z-20 flex flex-wrap gap-2">
+      <button id="btn-3d-autorotate" class="px-3.5 py-1.5 rounded-full bg-surface/80 border border-outline-variant text-xs text-primary font-semibold hover:border-primary transition-all flex items-center gap-1.5 backdrop-blur-md">
+        <span class="material-symbols-outlined text-sm">sync</span>
+        <span id="txt-3d-autorotate">${currentAutoRotate ? 'Pause Auto-Rotate' : 'Start Auto-Rotate'}</span>
+      </button>
+      <button id="btn-3d-reset" class="px-3.5 py-1.5 rounded-full bg-surface/80 border border-outline-variant text-xs text-on-surface font-semibold hover:text-white hover:border-primary transition-all flex items-center gap-1.5 backdrop-blur-md">
+        <span class="material-symbols-outlined text-sm">restart_alt</span> Reset View
+      </button>
+    </div>
+
+    <!-- Material Finish Selector -->
+    <div class="absolute top-4 right-4 z-20 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface/80 border border-outline-variant backdrop-blur-md">
+      <span class="text-[10px] uppercase text-on-surface-variant font-bold tracking-wider mr-1">Finish:</span>
+      <button data-finish="gold" title="18K Gold" class="size-5 rounded-full bg-[#e9c176] border border-white/40 hover:scale-110 transition-transform"></button>
+      <button data-finish="rosegold" title="Rose Gold" class="size-5 rounded-full bg-[#e0a98b] border border-white/40 hover:scale-110 transition-transform"></button>
+      <button data-finish="platinum" title="Platinum" class="size-5 rounded-full bg-[#e5e8ec] border border-white/40 hover:scale-110 transition-transform"></button>
+      <button data-finish="obsidian" title="Obsidian Black" class="size-5 rounded-full bg-[#222224] border border-white/40 hover:scale-110 transition-transform"></button>
+    </div>
+
+    <!-- Bottom Control Bar / Guidance -->
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 px-5 py-2 rounded-full bg-black/60 border border-white/10 backdrop-blur-md text-xs text-on-surface-variant flex items-center gap-3">
+      <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-primary">drag_pan</span> Drag to Rotate</span>
+      <span class="text-white/20">•</span>
+      <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-primary">zoom_in</span> Scroll to Zoom</span>
+    </div>
+  `;
+
+  bind3DControlListeners();
+
+  const preset = getMaterialPreset(materialType);
+  setTimeout(() => {
+    initThreeScene(imgSrc, preset);
+  }, 50);
+}
+
+// 5. Window Resize Handler
 function onWindowResize() {
   if (!renderer || !camera || !canvasContainer) return;
   const width = canvasContainer.clientWidth;
@@ -159,7 +266,7 @@ function onWindowResize() {
   renderer.setSize(width, height);
 }
 
-// 3. Build Detailed 3D Watch Mesh
+// 6. Build Detailed 3D Watch Mesh
 function createWatch3D(dialImageUrl, materialPreset) {
   const watchGroup = new THREE.Group();
 
@@ -342,7 +449,7 @@ function createWatch3D(dialImageUrl, materialPreset) {
   return watchGroup;
 }
 
-// 4. Initialize Three.js Scene
+// 7. Initialize Three.js Scene
 function initThreeScene(dialImageUrl, materialPreset) {
   const width = canvasContainer.clientWidth;
   const height = canvasContainer.clientHeight;
@@ -412,53 +519,45 @@ function initThreeScene(dialImageUrl, materialPreset) {
   animate();
 }
 
-// 5. Open 3D View Function
-export function open3DView(modelName, imgSrc, materialType = '') {
+// 8. Open 3D View Function
+export function open3DView(modelName, imgSrc, materialType = '', videoSrc = '') {
   createModalDOM();
 
+  currentParams = { modelName, imgSrc, materialType, videoSrc };
+
   const titleEl = document.getElementById('watch-3d-title');
-  const subtitleEl = document.getElementById('watch-3d-subtitle');
+  const modeTabs = document.getElementById('watch-3d-mode-tabs');
+  const btnModeVideo = document.getElementById('btn-mode-video');
+  const btnModeInteractive = document.getElementById('btn-mode-interactive');
 
   if (titleEl) titleEl.textContent = `${modelName} - 3D View`;
-  if (subtitleEl) subtitleEl.textContent = `Finish: ${materialType || 'Custom Manufacture'} • Real-time Interactive 3D Model`;
+
+  if (videoSrc) {
+    if (modeTabs) modeTabs.classList.remove('hidden');
+    if (btnModeVideo) btnModeVideo.className = "px-3.5 py-1 rounded-full text-xs font-bold transition-all bg-primary text-on-primary shadow-sm flex items-center gap-1";
+    if (btnModeInteractive) btnModeInteractive.className = "px-3.5 py-1 rounded-full text-xs font-bold transition-all text-on-surface-variant hover:text-white flex items-center gap-1";
+    renderVideoMode(videoSrc);
+  } else {
+    if (modeTabs) modeTabs.classList.add('hidden');
+    renderInteractive3DMode(imgSrc, materialType);
+  }
 
   modalContainer.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
-
-  const preset = getMaterialPreset(materialType);
-
-  // Allow DOM to adjust layout before measuring sizes
-  setTimeout(() => {
-    initThreeScene(imgSrc, preset);
-  }, 50);
 }
 
-// 6. Close 3D View Function
+// 9. Close 3D View Function
 export function close3DView() {
   if (!modalContainer) return;
   modalContainer.classList.add('hidden');
   document.body.style.overflow = '';
 
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId);
-    animationFrameId = null;
+  const videoEl = document.getElementById('watch-3d-video');
+  if (videoEl) {
+    videoEl.pause();
   }
 
-  if (renderer) {
-    renderer.dispose();
-    renderer = null;
-  }
-
-  if (scene) {
-    scene.traverse((obj) => {
-      if (obj.geometry) obj.geometry.dispose();
-      if (obj.material) {
-        if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose());
-        else obj.material.dispose();
-      }
-    });
-    scene = null;
-  }
+  stopThreeScene();
 }
 
 // Expose globally on window for inline HTML onclick handlers
