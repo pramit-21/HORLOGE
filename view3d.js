@@ -85,15 +85,7 @@ function createModalDOM() {
           </div>
 
           <!-- Mode Switcher Tabs (Video vs 3D Canvas) -->
-          <div id="watch-3d-mode-tabs" class="hidden flex items-center gap-1.5 bg-surface-container-high p-1 rounded-full border border-outline-variant">
-            <button id="btn-mode-video" class="px-3.5 py-1 rounded-full text-xs font-bold transition-all bg-primary text-on-primary shadow-sm flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm">videocam</span> 360° Video
-            </button>
-            <button id="btn-mode-interactive" class="px-3.5 py-1 rounded-full text-xs font-bold transition-all text-on-surface-variant hover:text-white flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm">view_in_ar</span> Interactive 3D
-            </button>
-          </div>
-          
+
           <button id="watch-3d-close" class="size-10 rounded-full bg-surface-container hover:bg-surface-bright text-on-surface hover:text-white transition-colors flex items-center justify-center border border-outline-variant">
             <span class="material-symbols-outlined">close</span>
           </button>
@@ -161,11 +153,6 @@ function renderVideoMode(videoSrc) {
         <source src="${videoSrc}" type="video/mp4" />
         Your browser does not support HTML5 video.
       </video>
-      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 px-5 py-2 rounded-full bg-black/75 border border-white/15 backdrop-blur-md text-xs text-on-surface-variant flex items-center gap-3 pointer-events-none">
-        <span class="flex items-center gap-1 text-primary"><span class="material-symbols-outlined text-sm">3d_rotation</span> Studio 360° Velvet Showcase</span>
-        <span class="text-white/20">•</span>
-        <span class="text-white/80 font-mono text-[11px]">4K Ultra-HD Rotation</span>
-      </div>
     </div>
   `;
 }
@@ -260,7 +247,7 @@ function onWindowResize() {
   const width = canvasContainer.clientWidth;
   const height = canvasContainer.clientHeight;
   if (width === 0 || height === 0) return;
-  
+
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
@@ -307,7 +294,7 @@ function createWatch3D(dialImageUrl, materialPreset) {
   // E. Recessed Dial Face with Watch Texture
   const dialRadius = 1.4;
   const dialGeo = new THREE.CircleGeometry(dialRadius, 64);
-  
+
   const textureLoader = new THREE.TextureLoader();
   const resolvedUrl = (dialImageUrl && !dialImageUrl.startsWith('http') && !dialImageUrl.startsWith('/') && !dialImageUrl.startsWith('data:') && !dialImageUrl.startsWith('./'))
     ? '/' + dialImageUrl
